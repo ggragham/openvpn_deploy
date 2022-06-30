@@ -1,0 +1,7 @@
+# Ansible
+ansible/inventory.yml
+
+# Easy_RSA
+Easy_RSA/ca/*
+!Easy_RSA/ca/ersa.sh
+!Easy_RSA/ca/client-configs
