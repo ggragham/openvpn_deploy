@@ -1,0 +1,164 @@
+---
+# tasks file for openvpn_deploy
+
+- block:
+    - name: Update deb-based system
+      apt:
+        name: '*'
+        state: latest
+        update_cache: true
+
+    - name: Install Uncomplicated Firewall, OpenVPN and EasyRSA
+      apt:
+        name:
+          - ufw
+          - openvpn
+          - easy-rsa
+        state: latest
+        update_cache: true
+
+    - name: Symlink EasyRSA to /usr/bin
+      file:
+        src: /usr/share/easy-rsa/easyrsa
+        dest: /usr/bin/easyrsa
+        state: link
+
+    - name: Set ipv4 forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Reset firewall rules
+      ufw:
+        state: reset
+
+    - name: Get default interface name
+      shell: ip route | grep default | sed "s/^.*dev //" | tr -d " "
+      register: default_interface
+
+    - name: Add before.rules to ufw
+      blockinfile:
+        path: /etc/ufw/before.rules
+        insertbefore: BOF
+        marker: "\n# {mark} ANSIBLE MANAGED BLOCK\n"
+        block: |
+          *nat
+          :POSTROUTING ACCEPT [0:0]
+          -A POSTROUTING -s 10.8.0.0/8 -o {{ default_interface.stdout }} -j MASQUERADE
+          COMMIT
+
+    - name: set ACCEPT to DEFAULT_FORWARD_POLICY
+      replace:
+        path: /etc/default/ufw
+        regexp: (DEFAULT_FORWARD_POLICY=).*
+        replace: \1"ACCEPT"
+
+    - name: Allow SSH
+      ufw:
+        state: enabled
+        rule: allow
+        port: ssh
+
+    - name: Allow OpenVPN
+      ufw:
+        rule: allow
+        port: 1194
+        proto: udp
+
+  become: true
+  when: ansible_pkg_mgr == "apt"
+
+- block:
+    - name: Create easyrsa dir
+      file:
+        path: '{{ server_easyrsa_path }}'
+        state: directory
+        mode: 0700
+
+    - name: Build Easy RSA docker container
+      local_action:
+        module: docker_image
+        name: easyrsa
+        tag: easyrsa
+        build:
+          path: '{{ easyrsa_docker_path }}'
+        source: local
+
+    - name: Build CA on local machine
+      local_action:
+        module: docker_container
+        name: easyrsa
+        image: easyrsa
+        volumes:
+          - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+        command: build_ca
+
+    - name: Generate server certificate
+      script: ../scripts/gen_server_cert.sh
+      environment:
+        EASY_RSA_PATH: '{{ server_easyrsa_path }}'
+        PKI_PATH: '{{ server_pki_path }}'
+        SERVER_NAME: '{{ server_name }}'
+      register: gsc_ret
+      failed_when:
+        - gsc_ret.rc != 0
+        - gsc_ret.rc != 42
+
+    - name: Send CA cert to server
+      copy:
+        src: '{{ local_ca_cert_source }}'
+        dest: '{{ server_cert_dest }}'
+        force: false
+
+    - block:
+        - name: Send req to CA on local machine
+          fetch:
+            src: '{{ server_req_source }}'
+            dest: '{{ server_req_dest }}'
+            flat: true
+
+        - name: Sign server cert req
+          local_action:
+            module: docker_container
+            name: easyrsa
+            image: easyrsa
+            volumes:
+              - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+            env:
+              SERVER_NAME: '{{ server_name }}'
+            command: sign_server
+
+        - name: Return server cert
+          copy:
+            src: '{{ server_cert_source }}'
+            dest: '{{ server_cert_dest }}'
+      when: gsc_ret.rc != 42
+
+  become: false
+
+- block:
+    - name: Gen HMAC signature
+      shell:
+        cmd: openvpn --genkey secret ta.key
+        chdir: '{{ server_pki_path }}'
+
+    - name: Copy keys and certs to OpenVPN directory
+      copy:
+        src: '{{ item }}'
+        dest: '{{ server_openvpn_path }}'
+        remote_src: true
+      with_items:
+        - '{{ server_pki_path }}/ta.key'
+        - '{{ server_cert_path }}/ca.crt'
+        - '{{ server_cert_path }}/{{ server_name }}.crt'
+        - '{{ server_key_path }}/{{ server_name }}.key'
+    - name: Copy server config
+      template:
+        src: server.j2
+        dest: '{{ server_openvpn_path }}/server.conf'
+      notify: Restart OpenVPN
+
+  become: true

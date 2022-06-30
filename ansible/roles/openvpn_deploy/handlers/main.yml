@@ -1,0 +1,8 @@
+---
+# handlers file for openvpn_deploy
+
+- name: Restart OpenVPN
+  service:
+    name: openvpn@server
+    state: restarted
+  become: true
