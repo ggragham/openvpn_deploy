@@ -3,6 +3,4 @@ ansible/inventory.yml
 ansible/Pipfile.lock
 
 # Easy_RSA
-Easy_RSA/ca/*
-!Easy_RSA/ca/ersa.sh
-!Easy_RSA/ca/client-configs
+Easy_RSA/ca/pki
