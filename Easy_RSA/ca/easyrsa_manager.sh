@@ -37,9 +37,10 @@ main() {
     sign_server)
         signServer
         ;;
-    sign_client)
+    gen_client)
         # TODO
         echo TODO
+        touch test.file
         ;;
     revoke_client)
         # TODO

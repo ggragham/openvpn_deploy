@@ -7,4 +7,4 @@ RUN useradd -m -s /bin/bash easyrsa
 USER easyrsa
 RUN mkdir /home/easyrsa/ca
 WORKDIR /home/easyrsa/ca
-ENTRYPOINT [ "/bin/bash", "ersa.sh" ]
+ENTRYPOINT [ "/bin/bash", "easyrsa_manager.sh" ]
