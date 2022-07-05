@@ -1,0 +1,33 @@
+---
+# tasks file for gen_clientansible опрос пользователя
+
+- name: Build Easy RSA docker container
+  docker_image:
+    name: easyrsa
+    tag: easyrsa
+    build:
+      path: '{{ easyrsa_docker_path }}'
+    source: local
+
+- name: Build CA on local machine
+  docker_container:
+    name: easyrsa
+    image: easyrsa
+    volumes:
+      - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+    command: build_ca
+
+- name: Generate client config
+  docker_container:
+    name: easyrsa
+    image: easyrsa
+    volumes:
+      - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+    env:
+      CLIENT_NAME: '{{ client_name }}'
+    command: gen_client
+
+- name: Gegerate client config
+  template:
+    src: client.j2
+    dest: '{{ client_configs_path }}/{{ client_name }}.ovpn'
