@@ -163,4 +163,10 @@
         dest: '{{ server_openvpn_path }}/server.conf'
       notify: Restart OpenVPN
 
+    - name: Send HMAC key to local machine
+      fetch:
+        src: '{{ server_pki_path }}/ta.key'
+        dest: '{{ local_pki_path }}/'
+        flat: true
+
   become: true
