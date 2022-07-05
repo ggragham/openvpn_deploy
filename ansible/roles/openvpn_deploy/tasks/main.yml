@@ -94,6 +94,8 @@
         image: easyrsa:latest
         volumes:
           - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+        env:
+          SERVER_NAME: '{{ server_name }}'
         command: build_ca
 
     - name: Generate server certificate

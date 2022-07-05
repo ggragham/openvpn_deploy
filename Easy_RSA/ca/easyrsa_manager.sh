@@ -12,6 +12,9 @@ REQ_PATH="$PKI_PATH/reqs"
 buildCA() {
     if [[ ! -d $PKI_PATH ]]; then
         easyrsa init-pki
+        echo "set_var EASYRSA_ALGO ec
+set_var EASYRSA_CURVE prime256v1
+set_var EASYRSA_REQ_CN $SERVER_NAME" >"$PKI_PATH/vars"
     fi
 
     if [[ ! -f $PKI_PATH/ca.crt ]]; then

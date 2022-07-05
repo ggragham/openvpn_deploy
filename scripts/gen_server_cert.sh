@@ -7,6 +7,9 @@ cd "$EASY_RSA_PATH" || exit "$?"
 
 genPKI() {
     easyrsa init-pki
+    echo "set_var EASYRSA_ALGO ec
+set_var EASYRSA_CURVE prime256v1
+set_var EASYRSA_REQ_CN $SERVER_NAME" >pki/vars
 }
 
 genCertReq() {
