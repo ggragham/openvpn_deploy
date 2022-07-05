@@ -85,13 +85,13 @@
         tag: easyrsa
         build:
           path: '{{ easyrsa_docker_path }}'
-        source: local
+        source: build
 
     - name: Build CA on local machine
       local_action:
         module: docker_container
         name: easyrsa
-        image: easyrsa
+        image: easyrsa:latest
         volumes:
           - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
         command: build_ca
