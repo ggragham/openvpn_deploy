@@ -4,3 +4,19 @@
 
   roles:
     - role: openvpn_deploy
+      tags: openvpn_deploy
+    
+
+- name: Generate client config
+  hosts: localhost 
+  connection: local
+
+  vars_prompt:
+
+    - name: client_name
+      prompt: Enter client name
+      private: no
+  
+  roles:
+    - role: gen_client_config
+      tags: gen_client_config

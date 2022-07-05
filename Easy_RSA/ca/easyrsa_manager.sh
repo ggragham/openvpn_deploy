@@ -30,6 +30,23 @@ signServer() {
     fi
 }
 
+genClient() {
+    checkClientExistence() {
+        local clientExist=""
+        clientExist=$(grep -c "/CN=$CLIENT_NAME\$" pki/index.txt)
+        if [[ $clientExist == 1 ]]; then
+            return 1
+        fi
+    }
+
+    if checkClientExistence; then
+        easyrsa build-client-full "$CLIENT_NAME" nopass
+    else
+        echo "Client exist"
+        exit 42
+    fi
+}
+
 main() {
     local arg="$1"
 
@@ -41,9 +58,7 @@ main() {
         signServer
         ;;
     gen_client)
-        # TODO
-        echo TODO
-        touch test.file
+        genClient
         ;;
     revoke_client)
         # TODO
