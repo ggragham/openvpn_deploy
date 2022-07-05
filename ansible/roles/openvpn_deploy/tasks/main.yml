@@ -113,7 +113,6 @@
       copy:
         src: '{{ local_ca_cert_source }}'
         dest: '{{ server_cert_dest }}'
-        force: false
 
     - block:
         - name: Send req to CA on local machine
