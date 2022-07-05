@@ -3,6 +3,10 @@
 # Easy-RSA management script.
 # Build CA, sign requests, generate clients, revoke certificates, etc.
 
+# Env vars
+# SERVER_NAME
+# CLIENT_NAME
+
 set -euo pipefail
 cd "$(dirname "$0")" || exit "$?"
 
