@@ -36,7 +36,7 @@
         state: reset
 
     - name: Get default interface name
-      shell: ip route | grep default | sed "s/^.*dev //" | tr -d " "
+      shell: ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1
       register: default_interface
 
     - name: Add before.rules to ufw
