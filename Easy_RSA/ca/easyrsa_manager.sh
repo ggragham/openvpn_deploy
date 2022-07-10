@@ -34,20 +34,32 @@ signServer() {
     fi
 }
 
-genClient() {
-    checkClientExistence() {
-        local clientExist=""
-        clientExist=$(grep -c "/CN=$CLIENT_NAME\$" pki/index.txt)
-        if [[ $clientExist == 1 ]]; then
-            return 1
-        fi
-    }
+checkClientExistence() {
+    clientExist=$(grep -c "/CN=$CLIENT_NAME\$" pki/index.txt)
 
-    if checkClientExistence; then
-        easyrsa build-client-full "$CLIENT_NAME" nopass
+    if [[ $clientExist == 1 ]]; then
+        return 0
     else
+        return 1
+    fi
+}
+
+genClient() {
+    if checkClientExistence; then
         echo "Client exist"
         exit 42
+    else
+        easyrsa build-client-full "$CLIENT_NAME" nopass
+    fi
+}
+
+revokeClient() {
+    if checkClientExistence; then
+        easyrsa --batch revoke "$CLIENT_NAME"
+        easyrsa gen-crl
+    else
+        echo "Client not exist"
+        exit 43
     fi
 }
 
@@ -65,8 +77,7 @@ main() {
         genClient
         ;;
     revoke_client)
-        # TODO
-        echo TODO
+        revokeClient
         ;;
     debug)
         bash

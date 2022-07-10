@@ -1,0 +1,12 @@
+---
+- name: Revoke client
+  hosts: server 
+
+  vars_prompt:
+    - name: client_name
+      prompt: Enter client name
+      private: no
+  
+  roles:
+    - role: revoke_client
+      tags: revoke_client

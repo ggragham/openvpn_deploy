@@ -12,6 +12,7 @@ ifconfig-pool-persist ipp.txt
 push "dhcp-option DNS 94.140.14.14"
 push "dhcp-option DNS 94.140.15.15"
 push "redirect-gateway def1 bypass-dhcp"
+crl-verify crl.pem
 dh none
 ecdh-curve prime256v1
 tls-crypt ta.key
