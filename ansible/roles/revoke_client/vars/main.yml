@@ -1,0 +1,13 @@
+---
+# vars file for revoke_client
+
+ansible_python_interpreter: /usr/bin/env python3
+server_openvpn_path: /etc/openvpn/
+easyrsa_docker_path: ../Easy_RSA
+
+server_easyrsa_path: '{{ ansible_user_dir }}/easyrsa'
+server_pki_path: '{{ server_easyrsa_path }}/pki'
+local_pki_path: ../Easy_RSA/ca/pki
+
+server_crl_source: '{{ local_pki_path }}/crl.pem'
+server_crl_dest: '{{ server_pki_path }}/'
