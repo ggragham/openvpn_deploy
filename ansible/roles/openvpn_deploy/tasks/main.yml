@@ -39,7 +39,6 @@
       blockinfile:
         path: /etc/ufw/before.rules
         insertbefore: BOF
-        marker: "\n# {mark} ANSIBLE MANAGED BLOCK\n"
         block: |
           *nat
           :POSTROUTING ACCEPT [0:0]
