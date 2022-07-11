@@ -108,7 +108,7 @@
       shell: 
         cmd: easyrsa --batch gen-req {{ server_name }} nopass
         chdir: '{{ server_easyrsa_path }}'
-        creates: '{{ server_pki_path }}/ca.crt'
+        creates: '{{ server_pki_path }}/issued/{{ server_name }}.crt'
 
     # - name: Generate server certificate
     #   script: ../scripts/gen_server_cert.sh
@@ -170,6 +170,7 @@
       shell:
         cmd: openvpn --genkey secret ta.key
         chdir: '{{ server_pki_path }}'
+        creates: '{{ server_pki_path }}/ta.key'
 
     - name: Copy keys and certs to OpenVPN directory
       copy:

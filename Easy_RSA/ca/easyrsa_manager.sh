@@ -12,6 +12,7 @@ cd "$(dirname "$0")" || exit "$?"
 
 PKI_PATH="./pki"
 REQ_PATH="$PKI_PATH/reqs"
+CERT_PATH="$PKI_PATH/issued"
 
 buildCA() {
     if [[ ! -d $PKI_PATH ]]; then
@@ -27,7 +28,10 @@ set_var EASYRSA_REQ_CN $SERVER_NAME" >"$PKI_PATH/vars"
 }
 
 signServer() {
-    if [[ -f $REQ_PATH/$SERVER_NAME.req ]]; then
+    if [[ -f $CERT_PATH/$SERVER_NAME.crt ]]; then
+        echo "Certificate exist"
+        exit 42
+    elif [[ -f $REQ_PATH/$SERVER_NAME.req ]]; then
         easyrsa --batch sign-req server "$SERVER_NAME"
     else
         exit "$?"
