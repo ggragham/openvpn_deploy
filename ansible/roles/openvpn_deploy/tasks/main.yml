@@ -148,6 +148,21 @@
         src: '{{ server_cert_source }}'
         dest: '{{ server_cert_dest }}'
 
+    - name: Generate CRL file
+      local_action:
+        module: docker_container
+        name: easyrsa
+        image: easyrsa:latest
+        volumes:
+          - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+        command: gen_crl 
+
+    - name: Send CRL to server
+      copy:
+        src: '{{ local_pki_path }}/crl.pem'
+        dest: '{{ server_pki_path }}/crl.pem'
+        mode: '0400'
+
   become: false
 
 - block:
@@ -163,9 +178,11 @@
         remote_src: true
       with_items:
         - '{{ server_pki_path }}/ta.key'
+        - '{{ server_key_path }}/{{ server_name }}.key'
         - '{{ server_cert_path }}/ca.crt'
         - '{{ server_cert_path }}/{{ server_name }}.crt'
-        - '{{ server_key_path }}/{{ server_name }}.key'
+        - '{{ server_pki_path }}/crl.pem'
+
     - name: Copy server config
       template:
         src: server.j2

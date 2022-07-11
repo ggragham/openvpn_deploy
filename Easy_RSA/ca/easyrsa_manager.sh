@@ -53,10 +53,14 @@ genClient() {
     fi
 }
 
+genCRL() {
+    easyrsa gen-crl
+}
+
 revokeClient() {
     if checkClientExistence; then
         easyrsa --batch revoke "$CLIENT_NAME"
-        easyrsa gen-crl
+        genCRL
     else
         echo "Client not exist"
         exit 43
@@ -72,6 +76,9 @@ main() {
         ;;
     sign_server)
         signServer
+        ;;
+    gen_crl)
+        genCRL
         ;;
     gen_client)
         genClient
