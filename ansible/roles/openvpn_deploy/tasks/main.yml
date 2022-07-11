@@ -98,45 +98,60 @@
           SERVER_NAME: '{{ server_name }}'
         command: build_ca
 
+    - name: Generate server PKI
+      shell:
+        cmd: easyrsa init-pki
+        chdir: '{{ server_easyrsa_path }}'
+        creates: '{{ server_pki_path }}/safessl-easyrsa.cnf'
+    
+    - name: Applly config for EasyRSA
+      template:
+        src: vars.j2
+        dest: '{{ server_pki_path }}/vars'
+
     - name: Generate server certificate
-      script: ../scripts/gen_server_cert.sh
-      environment:
-        EASY_RSA_PATH: '{{ server_easyrsa_path }}'
-        PKI_PATH: '{{ server_pki_path }}'
-        SERVER_NAME: '{{ server_name }}'
-      register: gsc_ret
-      failed_when:
-        - gsc_ret.rc != 0
-        - gsc_ret.rc != 42
+      shell: 
+        cmd: easyrsa --batch gen-req {{ server_name }} nopass
+        chdir: '{{ server_easyrsa_path }}'
+        creates: '{{ server_pki_path }}/ca.crt'
+
+    # - name: Generate server certificate
+    #   script: ../scripts/gen_server_cert.sh
+    #   environment:
+    #     EASY_RSA_PATH: '{{ server_easyrsa_path }}'
+    #     PKI_PATH: '{{ server_pki_path }}'
+    #     SERVER_NAME: '{{ server_name }}'
+    #   register: gsc_ret
+    #   failed_when:
+    #     - gsc_ret.rc != 0
+    #     - gsc_ret.rc != 42
 
     - name: Send CA cert to server
       copy:
         src: '{{ local_ca_cert_source }}'
         dest: '{{ server_cert_dest }}'
 
-    - block:
-        - name: Send req to CA on local machine
-          fetch:
-            src: '{{ server_req_source }}'
-            dest: '{{ server_req_dest }}'
-            flat: true
+    - name: Send req to CA on local machine
+      fetch:
+        src: '{{ server_req_source }}'
+        dest: '{{ server_req_dest }}'
+        flat: true
 
-        - name: Sign server cert req
-          local_action:
-            module: docker_container
-            name: easyrsa
-            image: easyrsa
-            volumes:
-              - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
-            env:
-              SERVER_NAME: '{{ server_name }}'
-            command: sign_server
+    - name: Sign server cert req
+      local_action:
+        module: docker_container
+        name: easyrsa
+        image: easyrsa
+        volumes:
+          - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+        env:
+          SERVER_NAME: '{{ server_name }}'
+        command: sign_server
 
-        - name: Return server cert
-          copy:
-            src: '{{ server_cert_source }}'
-            dest: '{{ server_cert_dest }}'
-      when: gsc_ret.rc != 42
+    - name: Return server cert
+      copy:
+        src: '{{ server_cert_source }}'
+        dest: '{{ server_cert_dest }}'
 
   become: false
 
