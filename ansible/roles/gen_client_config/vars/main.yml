@@ -1,16 +1,23 @@
 ---
 # vars file for gen_client
 
-easyrsa_docker_path: ../Easy_RSA
+# Service vars
+ansible_python_interpreter: /usr/bin/env python3
 server_name: ovpn_srv
+server_ip: "{{ hostvars['server']['ansible_host'] }}"
 
-pki_path: "{{ playbook_dir }}/../Easy_RSA/ca/pki"
-client_cert_path: '{{ pki_path }}/issued'
+# Path
+client_configs_path: '{{ playbook_dir }}/../clients'
+easyrsa_path: '{{ playbook_dir }}/../Easy_RSA'
+pki_path: '{{ easyrsa_path }}/ca/pki'
+cert_path: '{{ pki_path }}/issued'
+
+# Cert and key files
 ca_cert: "{{ lookup('file', '{{ pki_path }}/ca.crt') }}"
-client_cert: "{{ lookup('file', '{{ client_cert_path }}/{{ client_name }}.crt') }}"
+client_cert: "{{ lookup('file', '{{ cert_path }}/{{ client_name }}.crt') }}"
 client_key: "{{ lookup('file', '{{ pki_path }}/private/{{ client_name }}.key') }}"
 ta_key: "{{ lookup('file', '{{ pki_path }}/ta.key') }}"
 
-client_configs_path: ../clients
-
-server_ip: "{{ hostvars['server']['ansible_host'] }}"
+# easyrsa_docker_path: ../Easy_RSA
+# pki_path: "{{ playbook_dir }}/../Easy_RSA/ca/pki"
+# client_cert_path: '{{ pki_path }}/issued'

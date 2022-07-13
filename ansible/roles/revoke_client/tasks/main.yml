@@ -7,7 +7,7 @@
     name: easyrsa
     tag: easyrsa
     build:
-      path: '{{ easyrsa_docker_path }}'
+      path: '{{ local_easyrsa_path }}'
     source: local
 
 - name: Revoke client certificate
@@ -16,19 +16,19 @@
     name: easyrsa
     image: easyrsa:latest
     volumes:
-      - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+      - '{{ local_easyrsa_path }}/ca:/home/easyrsa/ca'
     env:
       CLIENT_NAME: '{{ client_name }}'
     command: revoke_client
 
 - name: Send CRL to server
   copy:
-    src: '{{ server_crl_source }}'
-    dest: '{{ server_crl_dest }}'
+    src: '{{ local_pki_path }}/{{ crl_pem }}'
+    dest: '{{ server_pki_path }}/'
 
 - name: Copy CRL to OpenVPN dir
   become: true
   copy:
-    src: '{{ server_pki_path }}/crl.pem'
+    src: '{{ server_pki_path }}/{{ crl_pem }}'
     dest: '{{ server_openvpn_path }}'
     remote_src: true

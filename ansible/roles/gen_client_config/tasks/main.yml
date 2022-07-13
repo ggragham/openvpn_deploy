@@ -1,12 +1,12 @@
 ---
-# tasks file for gen_clientansible опрос пользователя
+# tasks file for gen_client
 
 - name: Build Easy RSA docker container
   docker_image:
     name: easyrsa
     tag: easyrsa
     build:
-      path: '{{ easyrsa_docker_path }}'
+      path: '{{ easyrsa_path }}'
     source: local
 
 - name: Build CA on local machine
@@ -14,7 +14,7 @@
     name: easyrsa
     image: easyrsa
     volumes:
-      - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+      - '{{ easyrsa_path }}/ca:/home/easyrsa/ca'
     command: build_ca
 
 - name: Generate client config
@@ -22,7 +22,7 @@
     name: easyrsa
     image: easyrsa
     volumes:
-      - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+      - '{{ easyrsa_path }}/ca:/home/easyrsa/ca'
     env:
       CLIENT_NAME: '{{ client_name }}'
     command: gen_client

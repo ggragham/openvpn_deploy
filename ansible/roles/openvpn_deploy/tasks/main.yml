@@ -79,7 +79,7 @@
         name: easyrsa
         tag: easyrsa
         build:
-          path: '{{ easyrsa_docker_path }}'
+          path: '{{ local_easyrsa_path }}'
         source: build
 
     - name: Build CA on local machine
@@ -88,7 +88,7 @@
         name: easyrsa
         image: easyrsa:latest
         volumes:
-          - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+          - '{{ local_easyrsa_path }}/ca:/home/easyrsa/ca'
         env:
           SERVER_NAME: '{{ server_name }}'
         command: build_ca
@@ -108,7 +108,7 @@
       shell: 
         cmd: easyrsa --batch gen-req {{ server_name }} nopass
         chdir: '{{ server_easyrsa_path }}'
-        creates: '{{ server_pki_path }}/issued/{{ server_name }}.crt'
+        creates: '{{ server_cert_path }}/{{ server_cert }}'
 
     # - name: Generate server certificate
     #   script: ../scripts/gen_server_cert.sh
@@ -123,14 +123,14 @@
 
     - name: Send CA cert to server
       copy:
-        src: '{{ local_ca_cert_source }}'
-        dest: '{{ server_cert_dest }}'
+        src: '{{ local_pki_path }}/{{ ca_cert }}'
+        dest: '{{ server_cert_path }}/'
         mode: '0400'
 
     - name: Send req to CA on local machine
       fetch:
-        src: '{{ server_req_source }}'
-        dest: '{{ server_req_dest }}'
+        src: '{{ server_req_path }}/{{ server_req }}'
+        dest: '{{ local_req_path }}/'
         flat: true
 
     - name: Sign server cert req
@@ -139,15 +139,15 @@
         name: easyrsa
         image: easyrsa
         volumes:
-          - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+          - '{{ local_easyrsa_path }}/ca:/home/easyrsa/ca'
         env:
           SERVER_NAME: '{{ server_name }}'
         command: sign_server
 
     - name: Return server cert
       copy:
-        src: '{{ server_cert_source }}'
-        dest: '{{ server_cert_dest }}'
+        src: '{{ local_cert_path }}/{{ server_cert }}'
+        dest: '{{ server_cert_path }}/'
         mode: '0400'
 
     - name: Generate CRL file
@@ -156,13 +156,13 @@
         name: easyrsa
         image: easyrsa:latest
         volumes:
-          - '{{ easyrsa_docker_path }}/ca:/home/easyrsa/ca'
+          - '{{ local_easyrsa_path }}/ca:/home/easyrsa/ca'
         command: gen_crl 
 
     - name: Send CRL to server
       copy:
-        src: '{{ local_pki_path }}/crl.pem'
-        dest: '{{ server_pki_path }}/crl.pem'
+        src: '{{ local_pki_path }}/{{ crl_pem }}'
+        dest: '{{ server_pki_path }}/'
         mode: '0400'
 
   become: false
@@ -170,41 +170,41 @@
 - block:
     - name: Gen HMAC signature
       shell:
-        cmd: openvpn --genkey secret ta.key
+        cmd: openvpn --genkey secret {{ ta_key }}
         chdir: '{{ server_pki_path }}'
-        creates: '{{ server_pki_path }}/ta.key'
+        creates: '{{ server_pki_path }}/{{ ta_key }}'
 
     - name: Copy keys to OpenVPN directory
       copy:
         src: '{{ item }}'
-        dest: '{{ server_openvpn_path }}'
+        dest: '{{ server_openvpn_path }}/'
         mode: '0400'
         remote_src: true
       with_items:
-        - '{{ server_pki_path }}/ta.key'
-        - '{{ server_key_path }}/{{ server_name }}.key'
+        - '{{ server_pki_path }}/{{ ta_key }}'
+        - '{{ server_key_path }}/{{ server_key }}'
 
     - name: Copy certs to OpenVPN directory
       copy:
         src: '{{ item }}'
-        dest: '{{ server_openvpn_path }}'
+        dest: '{{ server_openvpn_path }}/'
         mode: '0600'
         remote_src: true
       with_items:
-        - '{{ server_cert_path }}/ca.crt'
-        - '{{ server_cert_path }}/{{ server_name }}.crt'
-        - '{{ server_pki_path }}/crl.pem'
+        - '{{ server_cert_path }}/{{ ca_cert }}'
+        - '{{ server_cert_path }}/{{ server_cert }}'
+        - '{{ server_pki_path }}/{{ crl_pem }}'
 
     - name: Copy server config
       template:
         src: server.j2
-        dest: '{{ server_openvpn_path }}/server.conf'
+        dest: '{{ server_openvpn_path }}/{{ server_conf }}'
         mode: '0600'
       notify: Restart OpenVPN
 
     - name: Send HMAC key to local machine
       fetch:
-        src: '{{ server_pki_path }}/ta.key'
+        src: '{{ server_pki_path }}/{{ ta_key }}'
         dest: '{{ local_pki_path }}/'
         flat: true
 

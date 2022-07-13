@@ -1,21 +1,39 @@
 ---
 # vars file for openvpn_deploy
 
+# Service vars
 ansible_python_interpreter: /usr/bin/env python3
-
 server_name: ovpn_srv
+
+# Filenames
+ca_cert: ca.crt
+server_req: '{{ server_name }}.req'
+server_cert: '{{ server_name }}.crt'
+server_key: '{{ server_name }}.key'
+ta_key: ta.key
+crl_pem: crl.pem
+server_conf: server.conf
+
+# Local path
+local_easyrsa_path: '{{ playbook_dir }}/../Easy_RSA'
+local_pki_path: '{{ local_easyrsa_path }}/ca/pki'
+local_req_path: '{{ local_pki_path }}/reqs'
+local_cert_path: '{{ local_pki_path }}/issued'
+
+# easyrsa_docker_path: ../Easy_RSA
+# local_ca_cert_source: '{{ local_pki_path }}/ca.crt'
+# local_easyrsa_path: ../Easy_RSA/ca
+# local_pki_path: ../Easy_RSA/ca/pki
+
+# Server path
+server_openvpn_path: /etc/openvpn
 server_easyrsa_path: '{{ ansible_user_dir }}/easyrsa'
-local_easyrsa_path: ../Easy_RSA/ca
 server_pki_path: '{{ server_easyrsa_path }}/pki'
-local_pki_path: ../Easy_RSA/ca/pki
-server_req_source: '{{ server_pki_path }}/reqs/{{ server_name }}.req'
-server_req_dest: '{{ local_pki_path }}/reqs/'
-server_cert_source: '{{ local_pki_path }}/issued/{{ server_name }}.crt'
-server_cert_dest: '{{ server_pki_path }}/issued/'
+server_req_path: '{{ server_pki_path }}/reqs'
 server_cert_path: '{{ server_pki_path }}/issued'
 server_key_path: '{{ server_pki_path }}/private'
-local_ca_cert_source: '{{ local_pki_path }}/ca.crt'
 
-easyrsa_docker_path: ../Easy_RSA
-
-server_openvpn_path: /etc/openvpn
+# server_cert_dest: '{{ server_pki_path }}/issued/'
+# server_cert_source: '{{ local_pki_path }}/issued/{{ server_name }}.crt'
+# server_req_dest: '{{ local_pki_path }}/reqs/'
+# server_req_source: '{{ server_pki_path }}/reqs/{{ server_name }}.req'
