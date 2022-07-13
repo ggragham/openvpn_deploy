@@ -15,6 +15,3 @@ local_pki_path: '{{ local_easyrsa_path }}/ca/pki'
 server_openvpn_path: /etc/openvpn/
 server_easyrsa_path: '{{ ansible_user_dir }}/easyrsa'
 server_pki_path: '{{ server_easyrsa_path }}/pki'
-
-# server_crl_source: '{{ local_pki_path }}/crl.pem'
-# server_crl_dest: '{{ server_pki_path }}/'

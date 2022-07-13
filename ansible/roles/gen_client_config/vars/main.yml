@@ -17,7 +17,3 @@ ca_cert: "{{ lookup('file', '{{ pki_path }}/ca.crt') }}"
 client_cert: "{{ lookup('file', '{{ cert_path }}/{{ client_name }}.crt') }}"
 client_key: "{{ lookup('file', '{{ pki_path }}/private/{{ client_name }}.key') }}"
 ta_key: "{{ lookup('file', '{{ pki_path }}/ta.key') }}"
-
-# easyrsa_docker_path: ../Easy_RSA
-# pki_path: "{{ playbook_dir }}/../Easy_RSA/ca/pki"
-# client_cert_path: '{{ pki_path }}/issued'

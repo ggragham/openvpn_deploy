@@ -110,17 +110,6 @@
         chdir: '{{ server_easyrsa_path }}'
         creates: '{{ server_cert_path }}/{{ server_cert }}'
 
-    # - name: Generate server certificate
-    #   script: ../scripts/gen_server_cert.sh
-    #   environment:
-    #     EASY_RSA_PATH: '{{ server_easyrsa_path }}'
-    #     PKI_PATH: '{{ server_pki_path }}'
-    #     SERVER_NAME: '{{ server_name }}'
-    #   register: gsc_ret
-    #   failed_when:
-    #     - gsc_ret.rc != 0
-    #     - gsc_ret.rc != 42
-
     - name: Send CA cert to server
       copy:
         src: '{{ local_pki_path }}/{{ ca_cert }}'
