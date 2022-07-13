@@ -9,5 +9,5 @@
       private: false
 
   roles:
-    - role: gen_client_config
-      tags: gen_client_config
+    - role: gen_client
+      tags: gen_client

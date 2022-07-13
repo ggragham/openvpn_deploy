@@ -23,7 +23,7 @@ Example Playbook
 
     - hosts: all
       roles:
-         - role: gen_client_config
+         - role: gen_client
 
 License
 -------
