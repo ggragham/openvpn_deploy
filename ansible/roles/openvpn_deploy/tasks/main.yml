@@ -99,7 +99,7 @@
         chdir: '{{ server_easyrsa_path }}'
         creates: '{{ server_pki_path }}/safessl-easyrsa.cnf'
 
-    - name: Applly config for EasyRSA
+    - name: Apply config for EasyRSA
       template:
         src: vars.j2
         dest: '{{ server_pki_path }}/vars'
