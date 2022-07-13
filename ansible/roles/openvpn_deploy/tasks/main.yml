@@ -98,14 +98,14 @@
         cmd: easyrsa init-pki
         chdir: '{{ server_easyrsa_path }}'
         creates: '{{ server_pki_path }}/safessl-easyrsa.cnf'
-    
+
     - name: Applly config for EasyRSA
       template:
         src: vars.j2
         dest: '{{ server_pki_path }}/vars'
 
     - name: Generate server certificate
-      shell: 
+      shell:
         cmd: easyrsa --batch gen-req {{ server_name }} nopass
         chdir: '{{ server_easyrsa_path }}'
         creates: '{{ server_cert_path }}/{{ server_cert }}'
@@ -157,7 +157,7 @@
         image: easyrsa:latest
         volumes:
           - '{{ local_easyrsa_path }}/ca:/home/easyrsa/ca'
-        command: gen_crl 
+        command: gen_crl
 
     - name: Send CRL to server
       copy:

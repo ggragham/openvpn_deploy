@@ -1,13 +1,13 @@
 ---
 - name: Generate client config
-  hosts: localhost 
+  hosts: localhost
   connection: local
 
   vars_prompt:
     - name: client_name
       prompt: Enter client name
-      private: no
-  
+      private: false
+
   roles:
     - role: gen_client_config
       tags: gen_client_config

@@ -97,7 +97,6 @@ main() {
         exit 0
         ;;
     *)
-
         echo "Invalid option: $arg"
         ;;
     esac
