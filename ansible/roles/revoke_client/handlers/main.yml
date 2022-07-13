@@ -1,2 +1,8 @@
 ---
 # handlers file for revoke_client
+
+- name: Restart OpenVPN
+  service:
+    name: openvpn@server
+    state: restarted
+  become: true

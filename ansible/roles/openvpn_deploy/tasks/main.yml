@@ -154,15 +154,21 @@
         dest: '{{ server_pki_path }}/'
         mode: '0400'
 
-  become: false
-
-- block:
     - name: Gen HMAC signature
       shell:
-        cmd: openvpn --genkey secret {{ ta_key }}
+        cmd: /usr/sbin/openvpn --genkey secret {{ ta_key }}
         chdir: '{{ server_pki_path }}'
         creates: '{{ server_pki_path }}/{{ ta_key }}'
 
+    - name: Send HMAC key to local machine
+      fetch:
+        src: '{{ server_pki_path }}/{{ ta_key }}'
+        dest: '{{ local_pki_path }}/'
+        flat: true
+
+  become: false
+
+- block:
     - name: Copy keys to OpenVPN directory
       copy:
         src: '{{ item }}'
@@ -189,12 +195,6 @@
         src: server.j2
         dest: '{{ server_openvpn_path }}/{{ server_conf }}'
         mode: '0600'
-      notify: Restart OpenVPN
 
-    - name: Send HMAC key to local machine
-      fetch:
-        src: '{{ server_pki_path }}/{{ ta_key }}'
-        dest: '{{ local_pki_path }}/'
-        flat: true
-
+  notify: Restart OpenVPN
   become: true

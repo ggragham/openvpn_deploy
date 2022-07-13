@@ -32,3 +32,4 @@
     src: '{{ server_pki_path }}/{{ crl_pem }}'
     dest: '{{ server_openvpn_path }}'
     remote_src: true
+  notify: Restart OpenVPN
