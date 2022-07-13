@@ -14,7 +14,7 @@
   local_action:
     module: docker_container
     name: easyrsa
-    image: easyrsa:latest
+    image: easyrsa:easyrsa
     volumes:
       - '{{ local_easyrsa_path }}/ca:/home/easyrsa/ca'
     env:

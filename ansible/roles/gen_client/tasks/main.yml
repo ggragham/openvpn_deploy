@@ -12,7 +12,7 @@
 - name: Build CA on local machine
   docker_container:
     name: easyrsa
-    image: easyrsa
+    image: easyrsa:easyrsa
     volumes:
       - '{{ easyrsa_path }}/ca:/home/easyrsa/ca'
     command: build_ca
@@ -20,7 +20,7 @@
 - name: Generate client config
   docker_container:
     name: easyrsa
-    image: easyrsa
+    image: easyrsa:easyrsa
     volumes:
       - '{{ easyrsa_path }}/ca:/home/easyrsa/ca'
     env:
