@@ -1,6 +1,5 @@
 # Ansible
 ansible/inventory.yml
-ansible/Pipfile.lock
 
 # Easy_RSA
 Easy_RSA/ca/pki
@@ -8,3 +7,7 @@ Easy_RSA/ca/pki
 # Client config dir
 clients/*
 !clients/README.md
+
+# Python venv
+.venv/
+Pipfile.lock
