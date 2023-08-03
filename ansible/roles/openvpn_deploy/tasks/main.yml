@@ -34,6 +34,11 @@
         state: present
         reload: true
 
+    - name: Check if ufw is installed
+      command: which ufw
+      register: ufw_existence
+      ignore_errors: true
+
     - name: Config UFW
       block:
         - name: Get default interface name
@@ -61,6 +66,8 @@
             rule: allow
             port: 1194
             proto: udp
+
+      when: ufw_existence.rc == 0
 
   become: true
 
