@@ -11,3 +11,6 @@ clients/*
 # Python venv
 .venv/
 Pipfile.lock
+
+# Vagrant
+.vagrant/
