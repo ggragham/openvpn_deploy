@@ -8,12 +8,9 @@
         state: latest
         update_cache: true
 
-    - name: Install Uncomplicated Firewall, OpenVPN and EasyRSA
+    - name: Install OpenVPN and EasyRSA
       apt:
-        name:
-          - ufw
-          - openvpn
-          - easy-rsa
+        name: [openvpn, easy-rsa]
         state: latest
         update_cache: true
 
