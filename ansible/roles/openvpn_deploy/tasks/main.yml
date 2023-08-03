@@ -73,6 +73,21 @@
         state: directory
         mode: 0700
 
+    - name: Get local username
+      local_action: command whoami
+      register: local_username
+      changed_when: false
+
+    - name: Get local user ID
+      local_action: command id -u {{ local_username.stdout }}
+      register: local_userid
+      changed_when: false
+
+    - name: Set local username and UID as facts
+      set_fact:
+        local_username: '{{ local_username.stdout }}'
+        local_userid: '{{ local_userid.stdout }}'
+
     - name: Build Easy RSA docker container
       local_action:
         module: docker_image
@@ -80,6 +95,9 @@
         tag: easyrsa
         build:
           path: '{{ local_easyrsa_path }}'
+          args:
+            USERNAME: '{{ local_username }}'
+            USERID: '{{ local_userid }}'
         source: build
 
     - name: Build CA on local machine
