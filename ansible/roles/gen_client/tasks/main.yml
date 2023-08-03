@@ -45,6 +45,13 @@
       CLIENT_NAME: '{{ client_name }}'
     command: gen_client
 
+- name: Create client dir
+  file:
+    path: '{{ client_configs_path }}'
+    state: directory
+    owner: '{{ local_username }}'
+    mode: 0700
+
 - name: Gegerate client config
   template:
     src: client.j2

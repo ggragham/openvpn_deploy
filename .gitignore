@@ -6,7 +6,6 @@ Easy_RSA/ca/pki
 
 # Client config dir
 clients/*
-!clients/README.md
 
 # Python venv
 .venv/
