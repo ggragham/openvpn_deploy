@@ -151,6 +151,10 @@
           SERVER_NAME: '{{ server_name }}'
         command: sign_server
 
+    - name: Delay after cert generation
+      pause:
+        seconds: 5
+
     - name: Return server cert
       copy:
         src: '{{ local_cert_path }}/{{ server_cert }}'
@@ -166,6 +170,10 @@
           - '{{ local_easyrsa_path }}/ca:/home/easyrsa/ca'
         command: gen_crl
 
+    - name: Delay after cert generation
+      pause:
+        seconds: 5
+
     - name: Send CRL to server
       copy:
         src: '{{ local_pki_path }}/{{ crl_pem }}'
@@ -177,6 +185,10 @@
         cmd: /usr/sbin/openvpn --genkey secret {{ ta_key }}
         chdir: '{{ server_pki_path }}'
         creates: '{{ server_pki_path }}/{{ ta_key }}'
+
+    - name: Delay after cert generation
+      pause:
+        seconds: 5
 
     - name: Send HMAC key to local machine
       fetch:

@@ -45,6 +45,10 @@
       CLIENT_NAME: '{{ client_name }}'
     command: gen_client
 
+- name: Delay after cert generation
+  pause:
+    seconds: 5
+
 - name: Create client dir
   file:
     path: '{{ client_configs_path }}'
