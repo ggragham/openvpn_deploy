@@ -51,12 +51,6 @@
         regexp: (DEFAULT_FORWARD_POLICY=).*
         replace: \1"ACCEPT"
 
-    - name: Allow SSH
-      ufw:
-        state: enabled
-        rule: allow
-        port: ssh
-
     - name: Allow OpenVPN
       ufw:
         rule: allow
