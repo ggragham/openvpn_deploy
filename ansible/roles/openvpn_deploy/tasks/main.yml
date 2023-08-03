@@ -1,7 +1,8 @@
 ---
 # tasks file for openvpn_deploy
 
-- block:
+- name: Install necessary pkgs
+  block:
     - name: Update deb-based system
       apt:
         name: '*'
@@ -20,6 +21,11 @@
         dest: /usr/bin/easyrsa
         state: link
 
+  become: true
+  when: ansible_pkg_mgr == "apt"
+
+- name: Config network
+  block:
     - name: Set ipv4 forwarding
       sysctl:
         name: net.ipv4.ip_forward
@@ -28,36 +34,38 @@
         state: present
         reload: true
 
-    - name: Get default interface name
-      shell: ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1
-      register: default_interface
+    - name: Config UFW
+      block:
+        - name: Get default interface name
+          shell: ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1
+          register: default_interface
 
-    - name: Add before.rules to ufw
-      blockinfile:
-        path: /etc/ufw/before.rules
-        insertbefore: BOF
-        block: |
-          *nat
-          :POSTROUTING ACCEPT [0:0]
-          -A POSTROUTING -s 10.8.0.0/8 -o {{ default_interface.stdout }} -j MASQUERADE
-          COMMIT
+        - name: Add before.rules to ufw
+          blockinfile:
+            path: /etc/ufw/before.rules
+            insertbefore: BOF
+            block: |
+              *nat
+              :POSTROUTING ACCEPT [0:0]
+              -A POSTROUTING -s 10.8.0.0/8 -o {{ default_interface.stdout }} -j MASQUERADE
+              COMMIT
 
-    - name: set ACCEPT to DEFAULT_FORWARD_POLICY
-      replace:
-        path: /etc/default/ufw
-        regexp: (DEFAULT_FORWARD_POLICY=).*
-        replace: \1"ACCEPT"
+        - name: Set ACCEPT to DEFAULT_FORWARD_POLICY
+          replace:
+            path: /etc/default/ufw
+            regexp: (DEFAULT_FORWARD_POLICY=).*
+            replace: \1"ACCEPT"
 
-    - name: Allow OpenVPN
-      ufw:
-        rule: allow
-        port: 1194
-        proto: udp
+        - name: Allow OpenVPN
+          ufw:
+            rule: allow
+            port: 1194
+            proto: udp
 
   become: true
-  when: ansible_pkg_mgr == "apt"
 
-- block:
+- name: Generate certs and apply configs [1/2]
+  block:
     - name: Create easyrsa dir
       file:
         path: '{{ server_easyrsa_path }}'
@@ -189,7 +197,8 @@
 
   become: false
 
-- block:
+- name: Generate certs and apply configs [2/2]
+  block:
     - name: Copy keys to OpenVPN directory
       copy:
         src: '{{ item }}'
