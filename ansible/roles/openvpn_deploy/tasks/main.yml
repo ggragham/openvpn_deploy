@@ -61,12 +61,11 @@
             regexp: (DEFAULT_FORWARD_POLICY=).*
             replace: \1"ACCEPT"
 
-        - name: Allow OpenVPN
+        - name: Allow OpenVPN port
           ufw:
             rule: allow
-            port: 1194
-            proto: udp
-
+            port: '{{ openvpn_port }}'
+            proto: '{{ openvpn_proto }}'
       when: ufw_existence.rc == 0
 
   become: true
