@@ -19,7 +19,7 @@ buildCA() {
         easyrsa init-pki
         echo "set_var EASYRSA_ALGO ec
 set_var EASYRSA_CURVE prime256v1
-set_var EASYRSA_REQ_CN $SERVER_NAME" >"$PKI_PATH/vars"
+set_var EASYRSA_PKI \$PWD/pki" >"$PKI_PATH/vars"
     fi
 
     if [[ ! -f $PKI_PATH/ca.crt ]]; then
@@ -53,7 +53,7 @@ genClient() {
         echo "Client exist"
         exit 42
     else
-        easyrsa build-client-full "$CLIENT_NAME" nopass
+        easyrsa --batch build-client-full "$CLIENT_NAME" nopass
     fi
 }
 
