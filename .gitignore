@@ -1,5 +1,6 @@
 # Ansible
 inventory.yml
+vars.yml
 
 # Easy_RSA
 Easy_RSA/ca/pki
