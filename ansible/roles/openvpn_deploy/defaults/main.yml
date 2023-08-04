@@ -1,2 +1,19 @@
 ---
-# defaults file for openvpn_deploy
+# defaults file for deploy_openvpn
+
+server_name: ovpn_srv
+
+easyrsa_cert_curve: prime256v1
+
+openvpn_port: 1194
+openvpn_proto: udp
+openvpn_server_subnet: 10.8.0.0
+openvpn_server_mask: 255.255.255.0
+openvpn_dns_1: 94.140.14.14
+openvpn_dns_2: 94.140.15.15
+openvpn_dh_curve: prime256v1
+openvpn_hmac_alg: SHA256
+openvpn_cipher: AES-128-GCM
+openvpn_tls_min_ver: 1.2
+openvpn_tls_cipher: TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256
+openvpn_verb_level: 3

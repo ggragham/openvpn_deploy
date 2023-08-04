@@ -3,7 +3,6 @@
 
 # Service vars
 ansible_python_interpreter: /usr/bin/env python3
-server_name: ovpn_srv
 server_ip: "{{ hostvars['server']['ansible_host'] }}"
 
 # Path

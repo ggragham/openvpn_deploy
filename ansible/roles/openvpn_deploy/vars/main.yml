@@ -3,13 +3,12 @@
 
 # Service vars
 ansible_python_interpreter: /usr/bin/env python3
-server_name: ovpn_srv
 
 # Filenames
-ca_cert: ca.crt
 server_req: '{{ server_name }}.req'
 server_cert: '{{ server_name }}.crt'
 server_key: '{{ server_name }}.key'
+ca_cert: ca.crt
 ta_key: ta.key
 crl_pem: crl.pem
 server_conf: server.conf

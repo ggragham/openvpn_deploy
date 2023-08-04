@@ -1,7 +1,7 @@
 client
-proto udp4
+proto {{ openvpn_proto }}
 explicit-exit-notify
-remote {{ server_ip }} 1194
+remote {{ server_ip }} {{ openvpn_port }}
 dev tun
 resolv-retry infinite
 nobind
@@ -9,15 +9,15 @@ persist-key
 persist-tun
 remote-cert-tls server
 verify-x509-name {{ server_name }} name
-auth SHA256
+auth {{ openvpn_hmac_alg }}
 auth-nocache
-cipher AES-128-GCM
+cipher {{ openvpn_cipher }}
 tls-client
-tls-version-min 1.2
-tls-cipher TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256
+tls-version-min {{ openvpn_tls_minver }}
+tls-cipher {{ openvpn_tls_cipher }}
 ignore-unknown-option block-outside-dns
 setenv opt block-outside-dns
-verb 3
+verb {{ openvpn_verb_level }}
 <ca>
 {{ ca_cert }}
 </ca>

@@ -1,4 +1,13 @@
 ---
 # defaults file for gen_client
 
+server_name: ovpn_srv
 client_name: "{{ lookup('env', 'OPENVPN_CLIENT_NAME') }}"
+
+openvpn_proto: udp4
+openvpn_port: 1194
+openvpn_hmac_alg: SHA256
+openvpn_cipher: AES-128-GCM
+openvpn_tls_min_ver: 1.2
+openvpn_tls_cipher: TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256
+openvpn_verb_level: 3
