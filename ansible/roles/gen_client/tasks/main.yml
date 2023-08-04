@@ -1,6 +1,17 @@
 ---
 # tasks file for gen_client
 
+- name: Prompt for client_name if not defined
+  pause:
+    prompt: Enter client name
+  when: client_name == ""
+  register: result
+
+- name: Set client name as facts
+  set_fact:
+    client_name: '{{ result.user_input }}'
+  when: client_name == ""
+
 - name: Get local username
   local_action: command whoami
   register: local_username

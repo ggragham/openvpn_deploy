@@ -1,2 +1,4 @@
 ---
 # defaults file for gen_client
+
+client_name: "{{ lookup('env', 'OPENVPN_CLIENT_NAME') }}"

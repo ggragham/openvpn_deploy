@@ -3,11 +3,6 @@
   hosts: localhost
   connection: local
 
-  vars_prompt:
-    - name: client_name
-      prompt: Enter client name
-      private: false
-
   roles:
     - role: gen_client
       tags: gen_client
