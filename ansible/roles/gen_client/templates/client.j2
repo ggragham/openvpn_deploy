@@ -13,7 +13,7 @@ auth {{ openvpn_hmac_alg }}
 auth-nocache
 cipher {{ openvpn_cipher }}
 tls-client
-tls-version-min {{ openvpn_tls_minver }}
+tls-version-min {{ openvpn_tls_min_ver }}
 tls-cipher {{ openvpn_tls_cipher }}
 ignore-unknown-option block-outside-dns
 setenv opt block-outside-dns
